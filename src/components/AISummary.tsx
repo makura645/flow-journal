@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { generateSummary } from '../services/openai';
+import { generateSummary } from '../services/api';
 import { FEATURES } from '../constants';
 import type { AISummaryResult } from '../types';
 
