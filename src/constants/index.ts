@@ -13,7 +13,7 @@ export const GAUGE_CHANGES = {
 } as const;
 
 // Fade system
-export const FADE_COUNTDOWN_SECONDS = 5;
+export const FADE_COUNTDOWN_SECONDS = 3;
 export const FADE_RECOVERY_CHARS = 8;
 export const FADE_RECOVERY_GAUGE = 40;
 
@@ -25,7 +25,7 @@ export const FADE_OPACITY = {
 } as const;
 
 // CPM calculation window
-export const CPM_WINDOW_SECONDS = 5;
+export const CPM_WINDOW_SECONDS = 3;
 
 // Gauge limits
 export const GAUGE_MIN = 0;
