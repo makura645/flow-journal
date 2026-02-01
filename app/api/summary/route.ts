@@ -71,8 +71,8 @@ summaryは本人目線で事実を整理した箇条書きにしてください�
 
     const result = JSON.parse(content);
     return NextResponse.json(result);
-  } catch (error) {
-    console.error('PayPerQ API error:', error);
+  } catch {
+    // Note: エラー詳細はログしない（ユーザーコンテンツ漏洩防止）
     return NextResponse.json({ error: 'Failed to generate summary' }, { status: 500 });
   }
 }
