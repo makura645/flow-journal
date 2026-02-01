@@ -173,6 +173,29 @@ button {
   color: var(--flow-color);
 }
 
+.github-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.github-link:hover {
+  color: var(--text-secondary);
+}
+
+.github-link svg {
+  flex-shrink: 0;
+}
+
 /* Journal Editor */
 .journal-editor {
   display: flex;
