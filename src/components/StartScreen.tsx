@@ -30,6 +30,10 @@ export function StartScreen({ onStart }: StartScreenProps) {
             <li>タイポは気にしない</li>
           </ul>
         </div>
+
+        <p className="privacy-note">
+          書いた内容はサーバーに保存されません。AIフィードバックをリクエストした場合のみLLMに送信されます。
+        </p>
       </div>
     </div>
   );
