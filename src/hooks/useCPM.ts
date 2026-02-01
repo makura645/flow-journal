@@ -37,15 +37,6 @@ export function useCPM() {
     const windowSeconds = Math.min(newCounts.length, CPM_WINDOW_SECONDS);
     const cpm = windowSeconds > 0 ? Math.round((totalChars / windowSeconds) * 60) : 0;
 
-    // Debug log
-    console.log('[CPM Debug]', {
-      thisSecondChars: currentSecondCharsRef.current,
-      window: newCounts,
-      totalChars,
-      windowSeconds,
-      cpm,
-    });
-
     setCpmData(prev => ({
       current: cpm,
       history: [...prev.history, cpm].slice(-60), // Keep last 60 values

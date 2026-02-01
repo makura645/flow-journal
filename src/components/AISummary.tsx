@@ -52,9 +52,8 @@ ${result.feedback}`;
     try {
       const summary = await generateSummary(text);
       setResult(summary);
-    } catch (err) {
+    } catch {
       setError('要約の生成に失敗しました。しばらく待ってから再試行してください。');
-      console.error(err);
     } finally {
       setLoading(false);
     }
