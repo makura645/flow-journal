@@ -15,7 +15,7 @@ Pennebaker式エクスプレッシブライティングの「止まらず書く�
 - **フローゲージ**: CPMに応じてゲージが増減、思考の流れを可視化
 - **霞むシステム**: ゲージが0になると文字が薄くなり、書き続けると復活
 - **セッション統計**: 文字数、平均CPM、フロー率などを表示
-- **AIフィードバック**: OpenAI APIで要約・感情分析・フィードバック生成
+- **AIフィードバック**: PayPerQ API経由で要約・感情分析・フィードバック生成
 
 ## フロー状態
 
@@ -32,19 +32,19 @@ npm install
 npm run dev
 ```
 
-AIフィードバックを使う場合は `.env` に `OPENAI_API_KEY` を設定。
+AIフィードバックを使う場合は `.env` に `PAYPERQ_API_KEY` を設定。
 
-## ビルド
+## Top Up
 
-```bash
-npm run build
-```
+`/topup` ページでPayPerQアカウントにLightning経由でsatsをチャージできます。
+
+**注意**: これはFlow Journal専用ではなく、PayPerQサービス全体（APIキー）への残高チャージです。同じAPIキーを使う他のアプリやサービスでも共有されます。
 
 ## 技術スタック
 
 - Next.js + React + TypeScript
 - Vercel (デプロイ)
-- OpenAI API (AIフィードバック)
+- PayPerQ API (AIフィードバック)
 
 ## イベント
 
