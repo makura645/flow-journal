@@ -9,7 +9,7 @@ export const GAUGE_CHANGES = {
   FLOW: 1.5,     // +1.5%/sec when CPM >= 100
   SLOW: -1,      // -1%/sec when CPM 40-100
   STOPPING: -3,  // -3%/sec when CPM 1-40
-  STOPPED: -8,   // -8%/sec when CPM 0
+  STOPPED: -12,  // -12%/sec when CPM 0
 } as const;
 
 // Fade system
@@ -25,7 +25,7 @@ export const FADE_OPACITY = {
 } as const;
 
 // CPM calculation window
-export const CPM_WINDOW_SECONDS = 3;
+export const CPM_WINDOW_SECONDS = 2;
 
 // Gauge limits
 export const GAUGE_MIN = 0;
