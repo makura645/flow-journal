@@ -139,11 +139,38 @@ button {
   color: var(--normal-color);
 }
 
-.privacy-note {
-  font-size: 0.75rem;
+.privacy {
+  text-align: left;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-top: 1rem;
+}
+
+.privacy h3 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.privacy ul {
+  list-style: none;
+}
+
+.privacy li {
   color: var(--text-muted);
-  margin-top: 1.5rem;
-  opacity: 0.7;
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.privacy li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--flow-color);
 }
 
 /* Journal Editor */

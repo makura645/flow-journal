@@ -31,9 +31,14 @@ export function StartScreen({ onStart }: StartScreenProps) {
           </ul>
         </div>
 
-        <p className="privacy-note">
-          書いた内容は保存されず、誰にも見られません
-        </p>
+        <div className="privacy">
+          <h3>プライバシー</h3>
+          <ul>
+            <li>書いた内容はサーバーに保存されません</li>
+            <li>ログにも残らないため、管理者も見れません</li>
+            <li>AIフィードバック時のみLLMに送信されます</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
