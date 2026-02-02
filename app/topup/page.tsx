@@ -230,11 +230,11 @@ export default function TopupPage() {
         {error && <div className="topup-error">{error}</div>}
 
         <div className="topup-info">
-          <h3>料金目安 (2026/02/01時点)</h3>
+          <h3>料金目安 (2026/02/02時点)</h3>
           <ul>
             <li>1000 sats ≈ $0.78 (BTC=$78,000換算)</li>
-            <li>gpt-4o-mini 1回 ≈ $0.0001</li>
-            <li>1000 sats で約 7,800 回使用可能</li>
+            <li>gpt-5 1回 ≈ $0.005</li>
+            <li>1000 sats で約 150 回使用可能</li>
           </ul>
         </div>
       </div>
