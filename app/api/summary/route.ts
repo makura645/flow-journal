@@ -48,7 +48,7 @@ ${text}
 summaryは本人目線で事実を整理した箇条書きにしてください。例: 「仕事のストレスについて考えた」「上司との関係に触れた」「週末の予定を立てた」`;
 
     const response = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5',
       messages: [
         {
           role: 'system',
