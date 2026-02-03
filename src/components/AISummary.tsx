@@ -6,45 +6,13 @@ import type { AISummaryResult, SessionStats } from '../types';
 interface AISummaryProps {
   text: string;
   stats: SessionStats;
-  endedAt?: string;
+  onResult?: (result: AISummaryResult) => void;
 }
 
-export function AISummary({ text, stats, endedAt }: AISummaryProps) {
+export function AISummary({ text, stats, onResult }: AISummaryProps) {
   const [result, setResult] = useState<AISummaryResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyMarkdown = async () => {
-    if (!result) return;
-
-    const formatDate = (isoString?: string) => {
-      if (!isoString) return '';
-      const date = new Date(isoString);
-      return date.toLocaleString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    };
-
-    const markdown = `# Flow Journal - ${formatDate(endedAt)}
-
-## 要約
-${result.summary.map(s => `- ${s}`).join('\n')}
-
-## 感情
-${result.emotions.join(', ')}
-
-## フィードバック
-${result.feedback}`;
-
-    await navigator.clipboard.writeText(markdown);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -53,6 +21,7 @@ ${result.feedback}`;
     try {
       const summary = await generateSummary(text, stats);
       setResult(summary);
+      onResult?.(summary);
     } catch {
       setError('要約の生成に失敗しました。しばらく待ってから再試行してください。');
     } finally {
@@ -110,9 +79,6 @@ ${result.feedback}`;
             <p>{result.feedback}</p>
           </section>
 
-          <button className="copy-button" onClick={handleCopyMarkdown}>
-            {copied ? 'コピーしました' : 'Markdownでコピー'}
-          </button>
         </div>
       )}
     </div>
