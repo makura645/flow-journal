@@ -9,6 +9,7 @@ interface JournalEditorProps {
   onTextChange: (text: string) => void;
   gaugeState: FlowGaugeState;
   fadeState: FadeState;
+  recoveryProgress: number;
   cpmData: CPMData;
   elapsed: number;
   onEnd: () => void;
@@ -19,6 +20,7 @@ export function JournalEditor({
   onTextChange,
   gaugeState,
   fadeState,
+  recoveryProgress,
   cpmData,
   elapsed,
   onEnd,
@@ -71,7 +73,7 @@ export function JournalEditor({
         />
 
         <FogOverlay fadeState={fadeState} />
-        <CountdownBanner fadeState={fadeState} recoveryProgress={0} />
+        <CountdownBanner fadeState={fadeState} recoveryProgress={recoveryProgress} />
       </div>
 
       <footer className="editor-footer">

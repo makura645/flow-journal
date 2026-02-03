@@ -1,11 +1,11 @@
-import type { AISummaryResult } from '../types';
+import type { AISummaryResult, SessionStats } from '../types';
 import { API_ENDPOINTS } from '../constants';
 
-export async function generateSummary(text: string): Promise<AISummaryResult> {
+export async function generateSummary(text: string, stats: SessionStats): Promise<AISummaryResult> {
   const response = await fetch(API_ENDPOINTS.SUMMARY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, stats }),
   });
 
   if (!response.ok) {

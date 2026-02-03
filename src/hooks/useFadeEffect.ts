@@ -18,8 +18,11 @@ export function useFadeEffect({ onFadeComplete, onRecovery }: UseFadeEffectOptio
     opacity: FADE_OPACITY.FULL,
   });
 
-  const charsTypedDuringFadeRef = useRef(0);
+  const [charsTypedDuringFade, setCharsTypedDuringFade] = useState(0);
+  const charsTypedRef = useRef(0);
   const countdownIntervalRef = useRef<number | null>(null);
+  const countdownRef = useRef(FADE_COUNTDOWN_SECONDS);
+  const isFadingRef = useRef(false);
 
   // Keep callbacks in refs to avoid stale closures in setInterval
   const onFadeCompleteRef = useRef(onFadeComplete);
@@ -39,9 +42,12 @@ export function useFadeEffect({ onFadeComplete, onRecovery }: UseFadeEffectOptio
 
   // Start the fade countdown
   const startFade = useCallback(() => {
-    if (fadeState.isFading) return;
+    if (isFadingRef.current) return;
 
-    charsTypedDuringFadeRef.current = 0;
+    charsTypedRef.current = 0;
+    setCharsTypedDuringFade(0);
+    isFadingRef.current = true;
+    countdownRef.current = FADE_COUNTDOWN_SECONDS;
 
     setFadeState({
       isFading: true,
@@ -50,41 +56,48 @@ export function useFadeEffect({ onFadeComplete, onRecovery }: UseFadeEffectOptio
     });
 
     countdownIntervalRef.current = window.setInterval(() => {
-      setFadeState(prev => {
-        const newCountdown = prev.countdown - 1;
+      countdownRef.current -= 1;
+      const newCountdown = countdownRef.current;
 
-        if (newCountdown <= 0) {
-          // Fade complete - session ends
-          if (countdownIntervalRef.current) {
-            clearInterval(countdownIntervalRef.current);
-            countdownIntervalRef.current = null;
-          }
-          onFadeCompleteRef.current();
-          return { ...prev, countdown: 0, opacity: FADE_OPACITY.LOW };
+      if (newCountdown <= 0) {
+        // Clear interval first, then update state and call callback
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current);
+          countdownIntervalRef.current = null;
         }
+        isFadingRef.current = false;
 
-        return {
-          ...prev,
+        setFadeState({ isFading: true, countdown: 0, opacity: FADE_OPACITY.LOW });
+        onFadeCompleteRef.current();
+      } else {
+        setFadeState({
+          isFading: true,
           countdown: newCountdown,
           opacity: getOpacity(newCountdown),
-        };
-      });
+        });
+      }
     }, 1000);
-  }, [fadeState.isFading]);
+  }, []);
 
   // Record chars typed during fade
   const recordFadeInput = useCallback((charsDelta: number) => {
-    if (!fadeState.isFading) return;
+    if (!isFadingRef.current) return;
 
-    charsTypedDuringFadeRef.current += charsDelta;
+    charsTypedRef.current += charsDelta;
+    const newCount = charsTypedRef.current;
+    setCharsTypedDuringFade(newCount);
 
     // Check if recovery threshold met
-    if (charsTypedDuringFadeRef.current >= FADE_RECOVERY_CHARS) {
+    if (newCount >= FADE_RECOVERY_CHARS) {
       // Recovery successful!
       if (countdownIntervalRef.current) {
         clearInterval(countdownIntervalRef.current);
         countdownIntervalRef.current = null;
       }
+
+      charsTypedRef.current = 0;
+      setCharsTypedDuringFade(0);
+      isFadingRef.current = false;
 
       setFadeState({
         isFading: false,
@@ -92,10 +105,9 @@ export function useFadeEffect({ onFadeComplete, onRecovery }: UseFadeEffectOptio
         opacity: FADE_OPACITY.FULL,
       });
 
-      charsTypedDuringFadeRef.current = 0;
       onRecoveryRef.current();
     }
-  }, [fadeState.isFading]);
+  }, []);
 
   // Cancel fade (used when gauge goes above 0 before countdown)
   const cancelFade = useCallback(() => {
@@ -104,7 +116,10 @@ export function useFadeEffect({ onFadeComplete, onRecovery }: UseFadeEffectOptio
       countdownIntervalRef.current = null;
     }
 
-    charsTypedDuringFadeRef.current = 0;
+    charsTypedRef.current = 0;
+    setCharsTypedDuringFade(0);
+    isFadingRef.current = false;
+    countdownRef.current = FADE_COUNTDOWN_SECONDS;
 
     setFadeState({
       isFading: false,
@@ -133,6 +148,6 @@ export function useFadeEffect({ onFadeComplete, onRecovery }: UseFadeEffectOptio
     recordFadeInput,
     cancelFade,
     reset,
-    recoveryProgress: (charsTypedDuringFadeRef.current / FADE_RECOVERY_CHARS) * 100,
+    recoveryProgress: (charsTypedDuringFade / FADE_RECOVERY_CHARS) * 100,
   };
 }

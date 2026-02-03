@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 export async function POST(request: NextRequest) {
-  const { text } = await request.json();
+  const { text, stats } = await request.json();
 
   if (!text || typeof text !== 'string') {
     return NextResponse.json({ error: 'Text is required' }, { status: 400 });
@@ -23,29 +23,20 @@ export async function POST(request: NextRequest) {
       baseURL: 'https://api.ppq.ai',
     });
 
-    const prompt = `以下のユーザーの文章を読み、内容に最も関連性が高い観点を2〜3個だけ選んで分析してください。
+    const statsInfo = stats
+      ? `【統計】${stats.totalChars}文字 / 平均${stats.avgCPM}CPM / ${Math.floor(stats.totalTime / 60)}分${stats.totalTime % 60}秒 / 復帰${stats.fadeRecoveries}回 / ${stats.endReason === 'fadeDeath' ? 'フェードアウト終了' : '手動終了'}\n`
+      : '';
 
-候補観点：
-1. 感情の推移や強さ
-2. 思考パターン・信念・認知のクセ
-3. トリガーと結果のつながり
-4. 価値観や動機づけ
-5. 取った対処法と効果
-6. 気づきや学びの芽
-7. 次の一歩や実験アイデア
-
----
+    const prompt = `${statsInfo}---
 ${text}
 ---
 
-以下のJSON形式で回答してください:
+JSON形式で回答:
 {
-  "summary": ["書いた内容のポイント1", "ポイント2", "ポイント3"],
-  "emotions": ["感情キーワード1", "感情キーワード2", "感情キーワード3"],
-  "feedback": "フィードバック（60-100語、3-4文程度。共感的な一文で感情をなぞり、選んだ観点から具体的な洞察を1-2個示し、自律性を尊重した未来志向の問いや提案で締める。汎用フレーズを避け、文章内の事実や表現に触れる）"
-}
-
-summaryは本人目線で事実を整理した箇条書きにしてください。例: 「仕事のストレスについて考えた」「上司との関係に触れた」「週末の予定を立てた」`;
+  "summary": ["本人目線の事実要約を2-3個"],
+  "emotions": ["感情キーワードを2-3個"],
+  "feedback": "1-3文。具体的な行動提案より気づきを優先。本人の言葉を拾い、まだ言語化されていない気持ちや視点を一つ添える。自然なら最後に軽い問いかけを一つ。問いが浮かばなければ温かい一言で締める。短い文章には短く返す。"
+}`;
 
     const response = await client.chat.completions.create({
       model: 'gpt-5',
@@ -53,7 +44,7 @@ summaryは本人目線で事実を整理した箇条書きにしてください�
         {
           role: 'system',
           content:
-            'あなたはジャーナリングコーチAIです。ユーザーの内省をサポートし、内容に基づいた具体的で建設的なフィードバックを提供します。決めつけず選択肢を示し、汎用フレーズやテンプレ褒め言葉を避けてください。',
+            'ジャーナリングの振り返りAI。書き手の言語化を助け、本人がまだ気づいていない視点を添える。文体のトーンに合わせて返す。',
         },
         {
           role: 'user',

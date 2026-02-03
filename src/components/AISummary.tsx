@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { generateSummary } from '../services/api';
 import { FEATURES } from '../constants';
-import type { AISummaryResult } from '../types';
+import type { AISummaryResult, SessionStats } from '../types';
 
 interface AISummaryProps {
   text: string;
+  stats: SessionStats;
   endedAt?: string;
 }
 
-export function AISummary({ text, endedAt }: AISummaryProps) {
+export function AISummary({ text, stats, endedAt }: AISummaryProps) {
   const [result, setResult] = useState<AISummaryResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +51,7 @@ ${result.feedback}`;
     setError(null);
 
     try {
-      const summary = await generateSummary(text);
+      const summary = await generateSummary(text, stats);
       setResult(summary);
     } catch {
       setError('要約の生成に失敗しました。しばらく待ってから再試行してください。');

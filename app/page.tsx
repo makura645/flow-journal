@@ -27,10 +27,8 @@ export default function Home() {
   const handleStart = () => {
     setFinalStats(null);
     setFinalText('');
+    flowState.startSession();
     setScreen('writing');
-    setTimeout(() => {
-      flowState.startSession();
-    }, 0);
   };
 
   const handleEnd = () => {
@@ -54,6 +52,7 @@ export default function Home() {
           onTextChange={flowState.handleTextChange}
           gaugeState={flowState.gaugeState}
           fadeState={flowState.fadeState}
+          recoveryProgress={flowState.recoveryProgress}
           cpmData={flowState.cpmData}
           elapsed={flowState.timer.elapsed}
           onEnd={handleEnd}
@@ -69,7 +68,7 @@ export default function Home() {
             <div className="text-content">{finalText || flowState.text}</div>
           </div>
 
-          <AISummary text={finalText || flowState.text} endedAt={finalStats.endedAt} />
+          <AISummary text={finalText || flowState.text} stats={finalStats} endedAt={finalStats.endedAt} />
 
           <button className="restart-button" onClick={handleRestart}>
             もう一度

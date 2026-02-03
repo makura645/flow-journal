@@ -32,9 +32,12 @@ export function useFlowState({ onSessionEnd }: UseFlowStateOptions) {
   });
 
   const lastTextLengthRef = useRef(0);
+  const phaseRef = useRef<SessionPhase>('start');
+  const gaugeRef = useRef(GAUGE_INITIAL);
 
   // End session handler
   const handleSessionEnd = useCallback((reason: 'fadeDeath' | 'manual') => {
+    phaseRef.current = 'ended';
     setPhase('ended');
 
     const stats = statsRef.current;
@@ -56,9 +59,13 @@ export function useFlowState({ onSessionEnd }: UseFlowStateOptions) {
   // CPM hook
   const cpm = useCPM();
 
+  // Ref to break circular dependency: handleTick -> fadeEffect -> timer -> handleTick
+  const fadeEffectRef = useRef<{ startFade: () => void; recordFadeInput: (n: number) => void; reset: () => void } | null>(null);
+
   // Timer with tick callback
   const handleTick = useCallback(() => {
-    if (phase !== 'writing' && phase !== 'fading') return;
+    const currentPhase = phaseRef.current;
+    if (currentPhase !== 'writing' && currentPhase !== 'fading') return;
 
     const currentCPM = cpm.tick();
 
@@ -76,22 +83,22 @@ export function useFlowState({ onSessionEnd }: UseFlowStateOptions) {
     setFlowState(getFlowState(currentCPM));
 
     // Don't update gauge if in fade mode (handled separately)
-    if (phase === 'fading') return;
+    if (currentPhase === 'fading') return;
 
     // Update gauge
     const change = getGaugeChange(currentCPM);
-    setGauge(prev => {
-      const newGauge = Math.max(GAUGE_MIN, Math.min(GAUGE_MAX, prev + change));
+    const prevGauge = gaugeRef.current;
+    const newGauge = Math.max(GAUGE_MIN, Math.min(GAUGE_MAX, prevGauge + change));
+    gaugeRef.current = newGauge;
+    setGauge(newGauge);
 
-      // Trigger fade if gauge hits 0
-      if (newGauge <= 0 && prev > 0) {
-        setPhase('fading');
-        fadeEffect.startFade();
-      }
-
-      return newGauge;
-    });
-  }, [phase, cpm]);
+    // Trigger fade if gauge hits 0
+    if (newGauge <= 0 && prevGauge > 0) {
+      phaseRef.current = 'fading';
+      setPhase('fading');
+      fadeEffectRef.current?.startFade();
+    }
+  }, [cpm]);
 
   const timer = useTimer({
     onTick: handleTick,
@@ -99,11 +106,14 @@ export function useFlowState({ onSessionEnd }: UseFlowStateOptions) {
 
   // Fade effect handlers
   const handleFadeComplete = useCallback(() => {
+    timer.pause();
     handleSessionEnd('fadeDeath');
-  }, [handleSessionEnd]);
+  }, [timer, handleSessionEnd]);
 
   const handleRecovery = useCallback(() => {
+    phaseRef.current = 'writing';
     setPhase('writing');
+    gaugeRef.current = FADE_RECOVERY_GAUGE;
     setGauge(FADE_RECOVERY_GAUGE);
     statsRef.current.fadeRecoveries += 1;
   }, []);
@@ -113,24 +123,29 @@ export function useFlowState({ onSessionEnd }: UseFlowStateOptions) {
     onRecovery: handleRecovery,
   });
 
+  // Keep fadeEffectRef in sync
+  fadeEffectRef.current = fadeEffect;
+
   // Text change handler
   const handleTextChange = useCallback((newText: string) => {
     setText(newText);
     cpm.recordInput(newText.length);
 
     // Track chars for fade recovery
-    if (phase === 'fading') {
+    if (phaseRef.current === 'fading') {
       const charsDelta = Math.max(0, newText.length - lastTextLengthRef.current);
       fadeEffect.recordFadeInput(charsDelta);
     }
 
     lastTextLengthRef.current = newText.length;
-  }, [cpm, fadeEffect, phase]);
+  }, [cpm, fadeEffect]);
 
   // Start session
   const startSession = useCallback(() => {
+    phaseRef.current = 'writing';
     setPhase('writing');
     setText('');
+    gaugeRef.current = GAUGE_INITIAL;
     setGauge(GAUGE_INITIAL);
     setFlowState('stopped');
     statsRef.current = {
@@ -166,6 +181,7 @@ export function useFlowState({ onSessionEnd }: UseFlowStateOptions) {
     cpmData: cpm.cpmData,
     gaugeState,
     fadeState: fadeEffect.fadeState,
+    recoveryProgress: fadeEffect.recoveryProgress,
     timer: {
       elapsed: timer.elapsed,
     },

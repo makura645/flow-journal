@@ -20,10 +20,6 @@ export function SessionStats({ stats }: SessionStatsProps) {
     }
   };
 
-  const flowPercentage = stats.totalTime > 0
-    ? Math.round((stats.flowTime / stats.totalTime) * 100)
-    : 0;
-
   return (
     <div className="session-stats">
       <h2 className="stats-title">{getEndReasonMessage()}</h2>
@@ -37,11 +33,6 @@ export function SessionStats({ stats }: SessionStatsProps) {
         <div className="stat-item">
           <span className="stat-value">{stats.avgCPM}</span>
           <span className="stat-label">平均CPM</span>
-        </div>
-
-        <div className="stat-item highlight">
-          <span className="stat-value">{flowPercentage}%</span>
-          <span className="stat-label">フロー率</span>
         </div>
 
         <div className="stat-item">

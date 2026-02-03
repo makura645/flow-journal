@@ -10,7 +10,6 @@ export function StartScreen({ onStart }: StartScreenProps) {
         <p className="subtitle">思考の流れを途切れさせない</p>
 
         <p className="description">
-          タイピングを止めると文字が霞む。<br />
           書き続けることで、思考は鮮明になる。
         </p>
 
