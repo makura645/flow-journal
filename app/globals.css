@@ -264,6 +264,12 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .end-button {
   padding: 0.5rem 1.5rem;
   background: transparent;
@@ -637,6 +643,51 @@ button {
 .copy-button:hover {
   border-color: var(--normal-color);
   color: var(--text-primary);
+}
+
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.share-button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  border-color: var(--normal-color);
+  color: var(--text-primary);
+}
+
+.share-button svg {
+  flex-shrink: 0;
+}
+
+.share-button .nostr-icon {
+  color: #662482;
+}
+
+.share-note {
+  width: 100%;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .restart-button {
