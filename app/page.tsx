@@ -104,7 +104,7 @@ export default function Home() {
 
           <button className="copy-button" onClick={() => {
             if (!finalStats) return;
-            const note = `🖊 FlowJournalで${formatTime(finalStats.totalTime)}、${finalStats.totalChars}文字書き続けた（${finalStats.avgCPM}CPM）\nhttps://flow-journal.vercel.app`;
+            const note = `🖊 FlowJournalで${formatTime(finalStats.totalTime)}、${finalStats.totalChars}文字書き続けた（${finalStats.avgCPM}CPM）\nhttps://flowj.vercel.app`;
             window.open(`https://nostter.app/post?content=${encodeURIComponent(note)}`, '_blank');
           }}>
             📊 統計をNostrでシェア（本文は含まれません）
