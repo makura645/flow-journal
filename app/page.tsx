@@ -17,18 +17,20 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const aiResultRef = useRef<AISummaryResult | null>(null);
 
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m > 0 ? `${m}分${s}秒` : `${s}秒`;
+  };
+
+  const formatDate = (isoString?: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  };
+
   const handleCopyMarkdown = async () => {
     if (!finalStats) return;
-    const formatDate = (isoString?: string) => {
-      if (!isoString) return '';
-      const date = new Date(isoString);
-      return date.toLocaleString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-    };
-    const formatTime = (seconds: number) => {
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return m > 0 ? `${m}分${s}秒` : `${s}秒`;
-    };
     const text = finalText || '';
     const ai = aiResultRef.current;
     let markdown = `# Flow Journal - ${formatDate(finalStats.endedAt)}\n\n${finalStats.totalChars}文字 / 平均${finalStats.avgCPM}CPM / ${formatTime(finalStats.totalTime)}`;
@@ -98,6 +100,14 @@ export default function Home() {
 
           <button className="copy-button" onClick={handleCopyMarkdown}>
             {copied ? 'コピーしました' : 'Markdownでコピー'}
+          </button>
+
+          <button className="copy-button" onClick={() => {
+            if (!finalStats) return;
+            const note = `🖊 FlowJournalで${formatTime(finalStats.totalTime)}書き続けた。${finalStats.totalChars}文字（${finalStats.avgCPM}CPM）\nhttps://flow-journal.vercel.app`;
+            window.open(`https://nostter.app/post?content=${encodeURIComponent(note)}`, '_blank');
+          }}>
+            📊 統計をNostrでシェア（本文は含まれません）
           </button>
 
           <button className="restart-button" onClick={handleRestart}>
