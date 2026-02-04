@@ -53,11 +53,13 @@ export function JournalEditor({
           <span className="timer-label">経過</span>
         </div>
 
-        <FlowGauge gaugeState={gaugeState} cpm={cpmData.current} />
+        <FlowGauge gaugeState={gaugeState} cpm={cpmData.current} style={{ opacity: Math.max(0, 1 - elapsed / 60), transition: 'opacity 1s ease' }} />
 
-        <button className="end-button" onClick={onEnd}>
-          終了
-        </button>
+        <div className="header-actions">
+          <button className="end-button" onClick={onEnd}>
+            終了
+          </button>
+        </div>
       </header>
 
       <div className="editor-container">
@@ -68,7 +70,9 @@ export function JournalEditor({
           onInput={handleInput}
           placeholder="思いつくままに書き始めてください..."
           style={{
-            opacity: fadeState.opacity,
+            opacity: gaugeState.percentage >= 50
+              ? 1.0
+              : gaugeState.percentage / 50,
           }}
         />
 

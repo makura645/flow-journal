@@ -1,11 +1,13 @@
+import type { CSSProperties } from 'react';
 import type { FlowGaugeState } from '../types';
 
 interface FlowGaugeProps {
   gaugeState: FlowGaugeState;
   cpm: number;
+  style?: CSSProperties;
 }
 
-export function FlowGauge({ gaugeState, cpm }: FlowGaugeProps) {
+export function FlowGauge({ gaugeState, cpm, style }: FlowGaugeProps) {
   const { percentage, state } = gaugeState;
 
   const getStateColor = () => {
@@ -25,7 +27,7 @@ export function FlowGauge({ gaugeState, cpm }: FlowGaugeProps) {
   };
 
   return (
-    <div className="flow-gauge">
+    <div className="flow-gauge" style={style}>
       <div className="gauge-bar">
         <div
           className="gauge-fill"
