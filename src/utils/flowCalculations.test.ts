@@ -23,13 +23,13 @@ describe('getFlowState', () => {
 
   // Boundary tests
   it('boundary: exactly at FLOW threshold', () => {
-    expect(getFlowState(75)).toBe('flow');
-    expect(getFlowState(74)).toBe('slow');
+    expect(getFlowState(CPM_THRESHOLDS.FLOW)).toBe('flow');
+    expect(getFlowState(CPM_THRESHOLDS.FLOW - 1)).toBe('slow');
   });
 
   it('boundary: exactly at SLOW threshold', () => {
-    expect(getFlowState(30)).toBe('slow');
-    expect(getFlowState(29)).toBe('stopped');
+    expect(getFlowState(CPM_THRESHOLDS.SLOW)).toBe('slow');
+    expect(getFlowState(CPM_THRESHOLDS.SLOW - 1)).toBe('stopped');
   });
 });
 
@@ -56,18 +56,18 @@ describe('getGaugeChange', () => {
 
   // Boundary tests
   it('boundary: exactly at FLOW threshold', () => {
-    expect(getGaugeChange(75)).toBe(1.5);
-    expect(getGaugeChange(74)).toBe(-1);
+    expect(getGaugeChange(CPM_THRESHOLDS.FLOW)).toBe(GAUGE_CHANGES.FLOW);
+    expect(getGaugeChange(CPM_THRESHOLDS.FLOW - 1)).toBe(GAUGE_CHANGES.SLOW);
   });
 
   it('boundary: exactly at SLOW threshold', () => {
-    expect(getGaugeChange(30)).toBe(-1);
-    expect(getGaugeChange(29)).toBe(-3);
+    expect(getGaugeChange(CPM_THRESHOLDS.SLOW)).toBe(GAUGE_CHANGES.SLOW);
+    expect(getGaugeChange(CPM_THRESHOLDS.SLOW - 1)).toBe(GAUGE_CHANGES.STOPPING);
   });
 
   it('boundary: exactly at STOPPED threshold', () => {
-    expect(getGaugeChange(1)).toBe(-3);
-    expect(getGaugeChange(0)).toBe(-8);
+    expect(getGaugeChange(CPM_THRESHOLDS.STOPPED)).toBe(GAUGE_CHANGES.STOPPING);
+    expect(getGaugeChange(CPM_THRESHOLDS.STOPPED - 1)).toBe(GAUGE_CHANGES.STOPPED);
   });
 });
 
@@ -89,13 +89,13 @@ describe('getFlowState and getGaugeChange consistency', () => {
     expect(getGaugeChange(stoppedCPM)).toBeLessThan(getGaugeChange(slowCPM));
   });
 
-  it('at boundary 74-75, state and gauge change together', () => {
-    // At 74: slow + decreasing
-    expect(getFlowState(74)).toBe('slow');
-    expect(getGaugeChange(74)).toBe(-1);
+  it('at boundary FLOW-1/FLOW, state and gauge change together', () => {
+    // At FLOW-1: slow + decreasing
+    expect(getFlowState(CPM_THRESHOLDS.FLOW - 1)).toBe('slow');
+    expect(getGaugeChange(CPM_THRESHOLDS.FLOW - 1)).toBe(GAUGE_CHANGES.SLOW);
 
-    // At 75: flow + increasing
-    expect(getFlowState(75)).toBe('flow');
-    expect(getGaugeChange(75)).toBe(1.5);
+    // At FLOW: flow + increasing
+    expect(getFlowState(CPM_THRESHOLDS.FLOW)).toBe('flow');
+    expect(getGaugeChange(CPM_THRESHOLDS.FLOW)).toBe(GAUGE_CHANGES.FLOW);
   });
 });
