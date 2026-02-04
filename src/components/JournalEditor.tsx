@@ -48,7 +48,7 @@ export function JournalEditor({
   return (
     <div className="journal-editor">
       <header className="editor-header">
-        <div className="timer">
+        <div className="timer" style={{ opacity: Math.max(0, 1 - elapsed / 60), transition: 'opacity 1s ease' }}>
           <span className="timer-elapsed">{formatTime(elapsed)}</span>
           <span className="timer-label">経過</span>
         </div>
